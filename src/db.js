@@ -1,6 +1,7 @@
 // Minimal IndexedDB wrapper: one object store of records keyed by `id`.
 // IndexedDB (rather than localStorage) is the browser's real database: it holds far more data,
 // survives as an installed app's storage, and doesn't block the page while saving.
+// Kept from the app's first version so records already saved on a device still load.
 const DB_NAME = "cloverelle-ledger";
 const STORE = "records";
 

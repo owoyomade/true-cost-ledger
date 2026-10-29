@@ -1,6 +1,6 @@
-# Ledger
+# TrueCost Ledger
 
-A complete bookkeeping app for small businesses. Record sales, stock purchases, expenses and money transfers. Ledger then works out landed costs, profit, cash balances, sales tax and what's owed in either direction.
+Bookkeeping for product sellers. Record sales, stock purchases, expenses and money transfers. TrueCost Ledger then works out landed costs, true profit per sale, cash balances, sales tax and what's owed in either direction.
 
 It's an installable web app (PWA). It runs in any modern browser, installs to a phone's home screen or a computer's dock, and works fully offline. Records are stored on the device, not on a server.
 
@@ -15,6 +15,8 @@ It's an installable web app (PWA). It runs in any modern browser, installs to a 
 - **Reports** (printable or saved as PDF): profit & loss, monthly breakdown, financial position, sales-tax summary, receivables/payables aging, inventory valuation, top customers.
 - **Settings for any business**: currency, financial-year start month, tax name and rates (GST/HST, VAT, sales tax), product groups, money accounts with opening balances, and expense categories.
 - **Data safety**: JSON backup and restore, CSV exports, and a persistent-storage request so the browser doesn't clear data on its own.
+- **Sample shop**: new users can explore a demo candle and soap shop, then clear it with one click.
+- **Free trial**: up to 25 entries free, then an unlock code removes the limit.
 
 ## Getting started
 
@@ -41,6 +43,15 @@ Once installed, the app opens in its own window and keeps working without intern
 ## Deploying
 
 `npm run build` produces a static site in `dist/` that any static host can serve, such as Vercel, Netlify, Cloudflare Pages or GitHub Pages. No server or database is needed.
+
+## Free trial and unlock codes
+
+Anyone can use the app with up to 25 entries (sample records don't count). Buyers receive an unlock code in the Start Here PDF delivered by Etsy or Gumroad. They can type it in **Settings → Your licence**, or tap the one-time link `https://<app>/?unlock=<code>`.
+
+- `src/licence.js` holds the trial limit, the buy link, the support email, and SHA-256 hashes of valid codes. The codes themselves are never stored in the source.
+- `npm run unlock-code` makes a new code and prints its hash. Add the hash to `CODE_HASHES` and keep the old ones, so earlier buyers stay unlocked.
+- The unlock is saved in the settings record, so it moves with a backup to a new device.
+- The check runs in the browser, so it keeps honest people honest rather than being unbreakable. Keep this repository private, since anyone with the source could remove the limit.
 
 ## Where data lives
 

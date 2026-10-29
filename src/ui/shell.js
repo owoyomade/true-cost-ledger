@@ -14,7 +14,7 @@ function refreshInstallUI() {
   $("#installBanner").hidden = !canPrompt || dismissed;
   $("#appHint").textContent = isStandalone()
     ? "You’re using the installed app. It works offline and keeps your records on this device."
-    : "Install Ledger so it opens in its own window, from your home screen or dock, and works without internet.";
+    : "Install TrueCost Ledger so it opens in its own window, from your home screen or dock, and works without internet.";
   $("#installHelp").textContent = isStandalone() || canPrompt ? ""
     : isIOS ? "On iPhone or iPad: open this page in Safari, tap Share, then “Add to Home Screen”."
     : "In Chrome or Edge, use the install icon in the address bar. In Safari on Mac, choose File → Add to Dock.";
@@ -33,7 +33,7 @@ function refreshNetStatus() {
 
 export function initShell() {
   window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvent = e; refreshInstallUI(); });
-  window.addEventListener("appinstalled", () => { installEvent = null; refreshInstallUI(); toast("Ledger installed"); });
+  window.addEventListener("appinstalled", () => { installEvent = null; refreshInstallUI(); toast("TrueCost Ledger installed"); });
   document.addEventListener("click", e => { if (e.target.closest("[data-install]")) promptInstall(); });
   $("#installDismiss").addEventListener("click", () => {
     try { localStorage.setItem(DISMISSED, "1"); } catch {}

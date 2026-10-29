@@ -1,8 +1,9 @@
 import * as store from "../store.js";
 import { num, listOf, orderCalc, saleCalc, costCalc, lineName, accountName, accountOf } from "../calc.js";
 import { CURRENCIES, MONTHS } from "../constants.js";
-import { $, $$, esc, uid, items, settings, lineTag, toast, download, persist, slug, today } from "./util.js";
+import { $, $$, esc, uid, items, settings, lineTag, toast, download, persist, slug, today, guessCurrency } from "./util.js";
 import { filteredLedger } from "./views.js";
+import { LAST_BACKUP, renderBizMenu } from "./bizmenu.js";
 
 const saveSettings = patch => persist(() => store.save({ ...settings(), ...patch, id: "settings", kind: "settings" }));
 const editing = el => document.activeElement && el.contains(document.activeElement) && document.activeElement.matches("input:not([type=checkbox]),select");
@@ -146,14 +147,6 @@ function initWelcome() {
     }).then(() => toast("All set. Add your first sale, purchase or expense."));
   });
 }
-function guessCurrency() {
-  try {
-    const region = new Intl.Locale(navigator.language).maximize().region;
-    const map = { CA: "CAD", US: "USD", GB: "GBP", AU: "AUD", NZ: "NZD", NG: "NGN", GH: "GHS", KE: "KES", ZA: "ZAR", IN: "INR", AE: "AED", JP: "JPY", CH: "CHF", SE: "SEK", MX: "MXN", BR: "BRL", SG: "SGD" };
-    return map[region] || (["DE", "FR", "IT", "ES", "NL", "IE", "BE", "AT", "PT", "FI"].includes(region) ? "EUR" : "USD");
-  } catch { return "USD"; }
-}
-
 function exportCSV(kind) {
   const s = settings(), it = items();
   const L = r => lineName(s, r.line), A = r => accountName(s, accountOf(s, r)), St = r => (r.status || "paid") === "paid" ? "Paid" : "Unpaid";
@@ -180,15 +173,18 @@ async function refreshStorageNote() {
 function initBackup() {
   $("#backupBtn").addEventListener("click", () => {
     download(`${slug(settings().name || "ledger")}-backup-${today()}.json`, store.exportBackup(), "application/json");
+    // Remembered per device so the business menu can say how long ago the last backup was.
+    try { localStorage.setItem(LAST_BACKUP, today()); } catch {}
+    renderBizMenu();
     toast("Backup saved");
   });
   $("#restoreBtn").addEventListener("click", () => $("#restoreFile").click());
   $("#restoreFile").addEventListener("change", async e => {
     const file = e.target.files[0]; e.target.value = "";
     if (!file) return;
-    if (!confirm("Restoring replaces everything in Ledger on this device with the backup. Continue?")) return;
+    if (!confirm("Restoring replaces everything in TrueCost Ledger on this device with the backup. Continue?")) return;
     try { const n = await store.importBackup(await file.text()); toast(`Restored ${n} records`); }
-    catch (err) { toast(err.message || "That file couldn’t be read as a Ledger backup."); }
+    catch (err) { toast(err.message || "That file couldn’t be read as a TrueCost Ledger backup."); }
   });
   $("#eraseBtn").addEventListener("click", async () => {
     if (!confirm("Erase every record and setting on this device? This can’t be undone.")) return;

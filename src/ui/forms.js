@@ -2,6 +2,7 @@ import * as store from "../store.js";
 import { num, orderCalc, saleCalc, listOf, stockRows, isPaid } from "../calc.js";
 import { TRANSFER_TYPES } from "../constants.js";
 import { $, esc, uid, today, items, settings, money, pct, toast, persist } from "./util.js";
+import { allowNewEntry } from "./licence.js";
 
 const M = 'type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"';
 const F = (id, label, val, attrs = "", help = "", full = false, extra = "") =>
@@ -113,6 +114,7 @@ const builders = { order: orderForm, sale: saleForm, cost: costForm, transfer: t
 export function openForm(kind, rec) {
   const s = settings();
   const isNew = !rec;
+  if (isNew && !allowNewEntry()) return;
   const firstLine = s.lines.find(l => l.active)?.id || s.lines[0]?.id || "all";
   rec = rec || {
     kind, id: uid(kind[0]), date: today(), line: kind === "cost" ? "all" : firstLine,

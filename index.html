@@ -3,94 +3,125 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ledger</title>
-<meta name="description" content="A complete small-business ledger: sales, purchases, inventory, expenses, accounts, tax and reports. Works offline.">
-<meta name="theme-color" content="#2F6B47" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#121A15" media="(prefers-color-scheme: dark)">
+<title>TrueCost Ledger</title>
+<meta name="description" content="Bookkeeping for product sellers: true landed cost per item, real profit, stock, expenses, tax and reports. Works offline.">
+<meta name="theme-color" content="#FAF7F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171115" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Ledger">
+<meta name="apple-mobile-web-app-title" content="TrueCost">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
+<!-- Line icons, drawn once and reused with <use>. Stroke colour comes from CSS (.ico). -->
+<svg hidden>
+  <symbol id="i-overview" viewBox="0 0 24 24"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-ledger" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.5" cy="6.5" r=".9"/><circle cx="4.5" cy="12" r=".9"/><circle cx="4.5" cy="17.5" r=".9"/></symbol>
+  <symbol id="i-sale" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.6" cy="7.6" r="1.6"/></symbol>
+  <symbol id="i-stock" viewBox="0 0 24 24"><path d="M21 7.5 12 3 3 7.5v9L12 21l9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/></symbol>
+  <symbol id="i-expense" viewBox="0 0 24 24"><path d="M5 3h14v18l-2.5-1.6L14 21l-2-1.6L10 21l-2.5-1.6L5 21z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4"/></symbol>
+  <symbol id="i-reports" viewBox="0 0 24 24"><path d="M3.5 3.5v17h17"/><path d="M8 16v-4M12.5 16V8M17 16v-6"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5V20h16V9.5M4 9.5c0 1.4 1.1 2.5 2.7 2.5s2.6-1.1 2.6-2.5c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 10.9 20 9.5M9.5 20v-5h5v5"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-3 3 3 3m-6 0 2 2"/></symbol>
+  <symbol id="i-backup" viewBox="0 0 24 24"><path d="M12 4v11m-4-4 4 4 4-4M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></symbol>
+  <symbol id="i-clear" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7v7m-3-3 3 3 3-3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><circle cx="12" cy="17" r=".6"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6.5h9M18 6.5h2M4 12h3M11 12h9M4 17.5h11M19 17.5h1"/><circle cx="15.5" cy="6.5" r="2.2"/><circle cx="9" cy="12" r="2.2"/><circle cx="17" cy="17.5" r="2.2"/></symbol>
+</svg>
+
 <div class="wrap">
   <header class="top">
+    <!-- The mark is a swing tag: what every product seller prices their goods with. It takes the chosen theme's colours (see src/theme.js). -->
     <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
-      <g fill="var(--clover)">
-        <circle cx="14" cy="14" r="7.5"/><circle cx="26" cy="14" r="7.5"/>
-        <circle cx="14" cy="26" r="7.5"/><circle cx="26" cy="26" r="7.5"/>
-      </g>
-      <circle cx="20" cy="20" r="2.4" fill="var(--bg)"/>
+      <rect width="40" height="40" rx="10" fill="var(--mark-bg)"/>
+      <path d="M20 7 29 14.2V31a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 11 31V14.2z" fill="var(--mark-tag)" stroke="var(--mark-tag)" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="20" cy="14.6" r="2.4" fill="var(--mark-bg)"/>
+      <rect x="14.5" y="21" width="11" height="2.6" rx="1.3" fill="var(--mark-bg)"/>
+      <rect x="14.5" y="26" width="7" height="2.6" rx="1.3" fill="var(--mark-bg)"/>
     </svg>
     <div class="brand">
-      <h1 id="bizName">Ledger</h1>
-      <p>Sales, purchases, expenses, accounts and tax in one place</p>
+      <h1 id="bizName">TrueCost Ledger</h1>
+      <p class="tagline">True costs and real profit for product sellers</p>
+      <div class="status" id="status">
+        <span id="saveStatus"><span class="dot"></span>Loading…</span>
+        <span id="netStatus"></span>
+      </div>
     </div>
-    <div class="status" id="status">
-      <span id="saveStatus"><span class="dot"></span>Loading…</span>
-      <span id="netStatus"></span>
-    </div>
+    <!-- The shop's badge opens the business menu (src/ui/bizmenu.js). There are no accounts, so this is about the shop on this device. -->
+    <button type="button" class="bizbadge" id="bizMenuBtn" aria-haspopup="dialog" aria-controls="bizMenu" aria-label="Business menu"><span id="bizInitials"></span></button>
   </header>
 
   <nav class="tabs" aria-label="Sections">
-    <a href="#overview" data-tab="overview">Overview</a>
-    <a href="#ledger" data-tab="ledger">Ledger</a>
-    <a href="#sales" data-tab="sales">Sales</a>
-    <a href="#orders" data-tab="orders">Purchases &amp; stock</a>
-    <a href="#costs" data-tab="costs">Expenses</a>
-    <a href="#reports" data-tab="reports">Reports</a>
-    <a href="#setup" data-tab="setup">Settings</a>
+    <a href="#overview" data-tab="overview"><svg class="ico"><use href="#i-overview"/></svg><span>Overview</span></a>
+    <a href="#ledger" data-tab="ledger"><svg class="ico"><use href="#i-ledger"/></svg><span>Ledger</span></a>
+    <a href="#sales" data-tab="sales"><svg class="ico"><use href="#i-sale"/></svg><span>Sales</span></a>
+    <a href="#orders" data-tab="orders"><svg class="ico"><use href="#i-stock"/></svg><span>Purchases<span class="wide-only"> &amp; stock</span></span></a>
+    <a href="#costs" data-tab="costs"><svg class="ico"><use href="#i-expense"/></svg><span>Expenses</span></a>
+    <a href="#reports" data-tab="reports"><svg class="ico"><use href="#i-reports"/></svg><span>Reports</span></a>
+    <a href="#setup" data-tab="setup" class="wide-only"><svg class="ico"><use href="#i-settings"/></svg><span>Settings</span></a>
   </nav>
 
   <div class="banner" id="updateBanner" hidden>
-    <p><b>A new version is ready.</b> Reload to get the latest Ledger. Your records stay put.</p>
+    <p><b>A new version is ready.</b> Reload to get the latest TrueCost Ledger. Your records stay put.</p>
     <button class="btn primary small" id="updateBtn">Reload</button>
   </div>
   <div class="banner" id="installBanner" hidden>
-    <p><b>Install Ledger</b> as an app so it opens from your home screen or dock and works offline.</p>
+    <p><b>Install TrueCost Ledger</b> as an app so it opens from your home screen or dock and works offline.</p>
     <button class="btn small" id="installDismiss">Not now</button>
     <button class="btn primary small" data-install>Install</button>
+  </div>
+  <div class="banner" id="sampleBanner" hidden>
+    <p><b>You’re exploring a sample shop.</b> Add, edit and delete freely. When you’re ready, clear it and set up your own books.</p>
+    <button class="btn primary small" id="clearSample">Clear sample data</button>
+  </div>
+  <div class="banner" id="trialBanner" hidden>
+    <p id="trialText"></p>
+    <a class="btn primary small" href="#setup" data-show-licence>Unlock full version</a>
   </div>
 
   <!-- OVERVIEW -->
   <section class="view" id="v-overview">
     <form class="panel welcome" id="welcome" hidden>
-      <h2>Welcome. Let’s set up your books.</h2>
-      <p class="hint">A few details so the numbers, tax and reports fit your business. You can change all of this later in Settings.</p>
+      <div class="welcomehead">
+        <h2>Welcome. Let’s set up your books.</h2>
+        <p>A few details so the numbers, tax and reports fit your business. You can change all of this later in Settings.</p>
+      </div>
       <div class="setgrid">
         <div class="f"><label for="w-name">Business name</label><input id="w-name" required placeholder="e.g. Harbour Street Bakery"></div>
         <div class="f"><label for="w-cur">Currency</label><select id="w-cur" data-currencies></select></div>
         <div class="f"><label for="w-fy">Financial year starts in</label><select id="w-fy" data-months></select></div>
         <div class="f"><label for="w-lines">What you sell, in groups</label><input id="w-lines" placeholder="e.g. Bread, Cakes, Catering"><span class="help">Optional. Separate with commas. Leave blank for one “General” group.</span></div>
-        <div class="f full toggle"><input type="checkbox" id="w-reg"><label for="w-reg" style="display:block;font-weight:400"><b>I charge sales tax (GST, HST, VAT…)</b><br><span class="note">Tick this if you’re registered to collect tax. Tax you pay on purchases is then tracked as recoverable rather than as a cost.</span></label></div>
+        <div class="f full toggle"><input type="checkbox" id="w-reg"><label for="w-reg"><b>I charge sales tax (GST, HST, VAT…)</b><br><span class="note">Tick this if you’re registered to collect tax. Tax you pay on purchases is then tracked as recoverable rather than as a cost.</span></label></div>
         <div class="f" data-w-tax hidden><label for="w-taxname">Tax name</label><input id="w-taxname" placeholder="e.g. GST/HST, VAT, Sales tax"></div>
         <div class="f" data-w-tax hidden><label for="w-rate">Rate you charge (%)</label><input id="w-rate" type="number" step="0.01" min="0" inputmode="decimal"></div>
       </div>
-      <div class="dlgfoot"><span class="sp"></span><button class="btn primary" type="submit">Start my ledger</button></div>
+      <div class="dlgfoot"><button class="btn" type="button" id="trySample">Explore a sample shop first</button><span class="sp"></span><button class="btn primary" type="submit">Start my ledger</button></div>
     </form>
 
-    <div class="controls">
-      <label for="period">Showing</label>
-      <select id="period" style="width:auto"></select>
-      <label for="lineFilter">Group</label>
-      <select id="lineFilter" style="width:auto"></select>
-      <span class="sp"></span>
-      <div class="btnrow quick">
-        <button class="btn primary small" data-new="sale">+ Sale</button>
-        <button class="btn small" data-new="order">+ Purchase</button>
-        <button class="btn small" data-new="cost">+ Expense</button>
-        <button class="btn small" data-new="transfer">+ Transfer</button>
+    <div class="toolbar">
+      <div class="controls">
+        <div class="f"><label for="period">Showing</label><select id="period"></select></div>
+        <div class="f"><label for="lineFilter">Group</label><select id="lineFilter"></select></div>
+      </div>
+      <div class="quickadd">
+        <button class="qa primary" data-new="sale"><svg class="ico"><use href="#i-sale"/></svg><span><span class="vh">Add </span>Sale</span></button>
+        <button class="qa" data-new="order"><svg class="ico"><use href="#i-stock"/></svg><span><span class="vh">Add </span>Purchase</span></button>
+        <button class="qa" data-new="cost"><svg class="ico"><use href="#i-expense"/></svg><span><span class="vh">Add </span>Expense</span></button>
+        <button class="qa" data-new="transfer"><svg class="ico"><use href="#i-transfer"/></svg><span><span class="vh">Add </span>Transfer</span></button>
       </div>
     </div>
 
-    <div class="kpis" id="kpis"></div>
+    <div class="kpis overview" id="kpis"></div>
 
     <div class="panel">
       <div class="panelhead"><h3>Monthly performance</h3><span class="note" id="chartLabel"></span></div>
       <div class="chart" id="chart"></div>
-      <div class="legend compact"><div><span class="sw" style="background:var(--clover)"></span>Revenue</div><div><span class="sw" style="background:var(--c-biz)"></span>Costs (stock sold, fees, expenses)</div></div>
+      <div class="legend compact"><div><span class="sw rev"></span>Revenue</div><div><span class="sw cost"></span>Costs (stock sold, fees, expenses)</div></div>
     </div>
 
     <div class="grid2">
@@ -140,13 +171,13 @@
         <button class="btn primary" data-new="transfer">Record transfer</button>
       </div>
     </div>
-    <div class="controls">
-      <select id="lgPeriod" aria-label="Period" style="width:auto"></select>
-      <select id="lgAccount" aria-label="Account" style="width:auto"></select>
-      <select id="lgType" aria-label="Type" style="width:auto">
+    <div class="controls filters">
+      <select id="lgPeriod" aria-label="Period"></select>
+      <select id="lgAccount" aria-label="Account"></select>
+      <select id="lgType" aria-label="Type">
         <option value="any">All types</option><option value="sale">Sales</option><option value="order">Purchases</option><option value="cost">Expenses</option><option value="transfer">Transfers</option><option value="unpaid">Unpaid only</option>
       </select>
-      <input id="lgSearch" type="search" placeholder="Search description, customer, supplier, ref…" style="flex:1;min-width:200px">
+      <input id="lgSearch" type="search" placeholder="Search description, customer, supplier, ref…">
     </div>
     <div class="kpis small" id="lgSummary"></div>
     <div class="panel"><div class="tablewrap"><table id="ledgerTable"></table></div></div>
@@ -161,7 +192,7 @@
       </div>
       <button class="btn primary act" data-new="sale">Add sale</button>
     </div>
-    <div class="controls"><select data-status-filter="sale" aria-label="Status" style="width:auto"><option value="any">All sales</option><option value="unpaid">Awaiting payment</option><option value="paid">Paid</option></select></div>
+    <div class="controls"><select data-status-filter="sale" aria-label="Status"><option value="any">All sales</option><option value="unpaid">Awaiting payment</option><option value="paid">Paid</option></select></div>
     <div class="panel"><div class="tablewrap"><table id="salesTable"></table></div></div>
   </section>
 
@@ -174,7 +205,7 @@
       </div>
       <button class="btn primary act" data-new="order">Add purchase</button>
     </div>
-    <div class="controls"><select data-status-filter="order" aria-label="Status" style="width:auto"><option value="any">All purchases</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+    <div class="controls"><select data-status-filter="order" aria-label="Status"><option value="any">All purchases</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
     <div class="panel"><div class="tablewrap"><table id="ordersTable"></table></div></div>
   </section>
 
@@ -187,7 +218,7 @@
       </div>
       <button class="btn primary act" data-new="cost">Add expense</button>
     </div>
-    <div class="controls"><select data-status-filter="cost" aria-label="Status" style="width:auto"><option value="any">All expenses</option><option value="unpaid">Unpaid bills</option><option value="paid">Paid</option></select></div>
+    <div class="controls"><select data-status-filter="cost" aria-label="Status"><option value="any">All expenses</option><option value="unpaid">Unpaid bills</option><option value="paid">Paid</option></select></div>
     <div class="panel"><div class="tablewrap"><table id="costsTable"></table></div></div>
   </section>
 
@@ -199,7 +230,7 @@
         <p>Statements for your records, your bank or your accountant. Print or save as PDF.</p>
       </div>
       <div class="act btnrow">
-        <select id="rpPeriod" aria-label="Report period" style="width:auto"></select>
+        <select id="rpPeriod" aria-label="Report period"></select>
         <button class="btn primary" id="printBtn">Print / PDF</button>
       </div>
     </div>
@@ -209,18 +240,43 @@
   <!-- SETTINGS -->
   <section class="view" id="v-setup">
     <div class="sectionhead"><div><h2>Settings</h2><p>Changes save as you go.</p></div></div>
+    <div class="panel" id="licencePanel">
+      <h3>Your licence</h3>
+      <p class="hint" id="licenceStatus"></p>
+      <div class="unlockrow" id="unlockForm">
+        <input id="unlockCode" placeholder="TC-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Unlock code">
+        <button class="btn primary" type="button" id="unlockBtn">Unlock</button>
+        <a class="btn" id="buyLink" target="_blank" rel="noopener" hidden>Buy the full version</a>
+      </div>
+    </div>
+    <div class="panel" id="appearancePanel">
+      <h3>Appearance</h3>
+      <p class="hint">Choose how TrueCost Ledger looks on this device. Your records aren’t affected.</p>
+      <p class="subhead-sm" id="themeLabel">Colours</p>
+      <div class="themes" id="themePicker" role="radiogroup" aria-labelledby="themeLabel"></div>
+      <div class="setgrid">
+        <div class="f"><label for="customColour">Or use your own brand colour</label>
+          <div class="colourrow"><input type="color" id="customColour" aria-describedby="customHelp"><span class="help" id="customHelp">We adjust it slightly if needed so text stays easy to read.</span></div>
+        </div>
+        <div class="f"><label for="themeMode">Light or dark</label>
+          <select id="themeMode"><option value="auto">Match this device</option><option value="light">Always light</option><option value="dark">Always dark</option></select>
+        </div>
+      </div>
+      <p class="subhead-sm" id="fontLabel">Font</p>
+      <div class="fonts" id="fontPicker" role="radiogroup" aria-labelledby="fontLabel"></div>
+    </div>
     <div class="panel" id="setupForm">
       <h3>Business</h3>
-      <div class="setgrid" style="margin-top:12px">
+      <div class="setgrid">
         <div class="f"><label for="s-name">Business name</label><input id="s-name"></div>
         <div class="f"><label for="s-cur">Currency</label><select id="s-cur" data-currencies></select></div>
         <div class="f"><label for="s-fy">Financial year starts in</label><select id="s-fy" data-months></select></div>
       </div>
-      <h3 style="margin-top:24px">Tax</h3>
-      <div class="setgrid" style="margin-top:12px">
+      <h3 class="subhead">Tax</h3>
+      <div class="setgrid">
         <div class="f full toggle">
           <input type="checkbox" id="s-reg">
-          <label for="s-reg" style="display:block;font-weight:400"><b>I’m registered to charge sales tax</b><br>
+          <label for="s-reg"><b>I’m registered to charge sales tax</b><br>
           <span class="note">When ticked, tax you pay on purchases and expenses is treated as recoverable and kept out of your costs, and tax you collect is tracked as owed to the tax authority. When unticked, tax you pay is simply part of the cost. Check local rules or an accountant if you’re unsure.</span></label>
         </div>
         <div class="f"><label for="s-taxname">Tax name</label><input id="s-taxname" placeholder="GST/HST, VAT, Sales tax…"></div>
@@ -239,7 +295,7 @@
 
     <div class="panel">
       <h3>Money accounts</h3>
-      <p class="hint">Where money is kept: bank accounts, cash, a card or PayPal balance. The opening balance is what was in the account when you started using Ledger.</p>
+      <p class="hint">Where money is kept: bank accounts, cash, a card or PayPal balance. The opening balance is what was in the account when you started using TrueCost Ledger.</p>
       <div class="editlist" id="acctEditor"></div>
       <button class="btn small" id="addAcct">+ Add account</button>
     </div>
@@ -270,7 +326,7 @@
         <button class="btn" id="restoreBtn">Restore from backup…</button>
         <input type="file" id="restoreFile" accept="application/json,.json" hidden>
       </div>
-      <p class="note" id="storageNote" style="margin-top:10px"></p>
+      <p class="note" id="storageNote"></p>
     </div>
 
     <div class="panel">
@@ -278,6 +334,15 @@
       <p class="hint" id="appHint"></p>
       <div class="btnrow"><button class="btn primary" data-install hidden>Install app</button></div>
       <p class="note" id="installHelp"></p>
+    </div>
+
+    <div class="panel about" id="aboutPanel">
+      <h3>About &amp; terms</h3>
+      <p class="hint">TrueCost Ledger, version <span id="appVersion"></span></p>
+      <p><b>Your privacy.</b> Your records are stored only on this device. TrueCost Ledger has no accounts, no ads and no tracking, and never sends your business data anywhere.</p>
+      <p><b>Licence.</b> One purchase covers one business, on all of that business’s own phones and computers. Please don’t share your unlock code publicly.</p>
+      <p><b>Good to know.</b> Figures are estimates to help you run your business. They don’t replace an accountant or official tax filings. Keep regular backups: if the browser’s data is cleared, records without a backup can’t be recovered.</p>
+      <p id="supportLine" hidden></p>
     </div>
 
     <div class="panel">
@@ -288,6 +353,22 @@
   </section>
 </div>
 
+<dialog id="bizMenu" class="menu" aria-labelledby="menuName">
+  <div class="menuhead">
+    <span class="bizbadge large" id="menuBadge" aria-hidden="true"></span>
+    <div><p class="menuname" id="menuName"></p><p class="menustatus" id="menuStatus"></p></div>
+  </div>
+  <div class="menulist">
+    <button type="button" class="menuitem accent" id="menuUnlock" data-menu="unlock" data-show-licence><svg class="ico"><use href="#i-key"/></svg><span>Unlock full version</span></button>
+    <button type="button" class="menuitem" id="menuBackupItem" data-menu="backup"><svg class="ico"><use href="#i-backup"/></svg><span>Back up now<small id="menuBackup"></small></span></button>
+    <button type="button" class="menuitem" id="menuClearSample" data-menu="clearSample"><svg class="ico"><use href="#i-clear"/></svg><span>Clear sample data</span></button>
+    <div class="menusep"></div>
+    <button type="button" class="menuitem" data-menu="appearance"><svg class="ico"><use href="#i-palette"/></svg><span>Appearance</span></button>
+    <button type="button" class="menuitem" data-menu="install" data-install hidden><svg class="ico"><use href="#i-install"/></svg><span>Install app</span></button>
+    <button type="button" class="menuitem" data-menu="settings"><svg class="ico"><use href="#i-settings"/></svg><span>Settings</span></button>
+    <button type="button" class="menuitem" data-menu="help"><svg class="ico"><use href="#i-help"/></svg><span>Help and about</span></button>
+  </div>
+</dialog>
 <dialog id="dlg"><form method="dialog" class="dlg" id="dlgForm" novalidate></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <script type="module" src="/src/main.js"></script>

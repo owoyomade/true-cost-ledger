@@ -7,22 +7,29 @@ import { renderViews, initViews, renderLedger } from "./ui/views.js";
 import { renderReports, initReports } from "./ui/reports.js";
 import { renderSettings, initSettings } from "./ui/settings.js";
 import { initShell } from "./ui/shell.js";
+import { initLicence, renderLicence, refreshLicence, handleUnlockLink } from "./ui/licence.js";
+import { applyAppearance, initAppearance } from "./ui/appearance.js";
+import { renderBizMenu, initBizMenu } from "./ui/bizmenu.js";
+
+// Before anything renders, so the page doesn't flash the default colours first.
+applyAppearance();
 
 function render() {
   const name = settings().name;
-  $("#bizName").textContent = name || "Ledger";
-  document.title = name ? `${name} · Ledger` : "Ledger";
-  renderViews(); renderReports(); renderSettings();
+  $("#bizName").textContent = name || "TrueCost Ledger";
+  document.title = name ? `${name} · TrueCost Ledger` : "TrueCost Ledger";
+  renderViews(); renderReports(); renderSettings(); renderLicence(); renderBizMenu();
 }
 
 function showTab() {
   const h = (location.hash || "").slice(1);
   const tab = TABS.includes(h) ? h : "overview";
   TABS.forEach(t => $("#v-" + t).classList.toggle("on", t === tab));
-  $$("nav.tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.tab === tab ? "page" : "false"));
+  $$("a[data-tab]").forEach(a => a.setAttribute("aria-current", a.dataset.tab === tab ? "page" : "false"));
 }
 function goTo(tab) { history.replaceState(null, "", "#" + tab); showTab(); window.scrollTo(0, 0); }
-$$("nav.tabs a").forEach(a => a.addEventListener("click", e => { e.preventDefault(); goTo(a.dataset.tab); }));
+// Section links live in the tab bar and, on phones, in the header too.
+$$("a[data-tab]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); goTo(a.dataset.tab); }));
 window.addEventListener("hashchange", showTab);
 
 document.addEventListener("click", e => {
@@ -45,13 +52,15 @@ function handleShortcut() {
   }
 }
 
-initForms(); initViews(); initReports(); initSettings(); initShell();
+initForms(); initViews(); initReports(); initSettings(); initShell(); initLicence(); initAppearance(); initBizMenu();
 showTab();
-store.subscribe(render);
+// The unlock check is async (it hashes the code), so render once more if it changes the result.
+store.subscribe(() => { render(); refreshLicence().then(changed => changed && render()); });
 store.load()
   .then(() => {
     $("#saveStatus").innerHTML = `<span class="dot ok"></span>Saved on this device`;
     handleShortcut();
+    handleUnlockLink();
   })
   .catch(err => {
     console.error(err);

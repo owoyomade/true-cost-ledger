@@ -42,7 +42,7 @@ export async function remove(id) {
 }
 
 export function exportBackup() {
-  return JSON.stringify({ app: "cloverelle-ledger", version: 2, exported: new Date().toISOString(), records: Object.values(items) }, null, 2);
+  return JSON.stringify({ app: "truecost-ledger", version: 2, exported: new Date().toISOString(), records: Object.values(items) }, null, 2);
 }
 
 // Accepts this app's backup file, or a plain {id: record} map like the original artifact stored.
