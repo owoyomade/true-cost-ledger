@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ledger</title>
+<meta name="description" content="A complete small-business ledger: sales, purchases, inventory, expenses, accounts, tax and reports. Works offline.">
+<meta name="theme-color" content="#2F6B47" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121A15" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ledger">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <g fill="var(--clover)">
+        <circle cx="14" cy="14" r="7.5"/><circle cx="26" cy="14" r="7.5"/>
+        <circle cx="14" cy="26" r="7.5"/><circle cx="26" cy="26" r="7.5"/>
+      </g>
+      <circle cx="20" cy="20" r="2.4" fill="var(--bg)"/>
+    </svg>
+    <div class="brand">
+      <h1 id="bizName">Ledger</h1>
+      <p>Sales, purchases, expenses, accounts and tax in one place</p>
+    </div>
+    <div class="status" id="status">
+      <span id="saveStatus"><span class="dot"></span>Loading…</span>
+      <span id="netStatus"></span>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Sections">
+    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#ledger" data-tab="ledger">Ledger</a>
+    <a href="#sales" data-tab="sales">Sales</a>
+    <a href="#orders" data-tab="orders">Purchases &amp; stock</a>
+    <a href="#costs" data-tab="costs">Expenses</a>
+    <a href="#reports" data-tab="reports">Reports</a>
+    <a href="#setup" data-tab="setup">Settings</a>
+  </nav>
+
+  <div class="banner" id="updateBanner" hidden>
+    <p><b>A new version is ready.</b> Reload to get the latest Ledger. Your records stay put.</p>
+    <button class="btn primary small" id="updateBtn">Reload</button>
+  </div>
+  <div class="banner" id="installBanner" hidden>
+    <p><b>Install Ledger</b> as an app so it opens from your home screen or dock and works offline.</p>
+    <button class="btn small" id="installDismiss">Not now</button>
+    <button class="btn primary small" data-install>Install</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="view" id="v-overview">
+    <form class="panel welcome" id="welcome" hidden>
+      <h2>Welcome. Let’s set up your books.</h2>
+      <p class="hint">A few details so the numbers, tax and reports fit your business. You can change all of this later in Settings.</p>
+      <div class="setgrid">
+        <div class="f"><label for="w-name">Business name</label><input id="w-name" required placeholder="e.g. Harbour Street Bakery"></div>
+        <div class="f"><label for="w-cur">Currency</label><select id="w-cur" data-currencies></select></div>
+        <div class="f"><label for="w-fy">Financial year starts in</label><select id="w-fy" data-months></select></div>
+        <div class="f"><label for="w-lines">What you sell, in groups</label><input id="w-lines" placeholder="e.g. Bread, Cakes, Catering"><span class="help">Optional. Separate with commas. Leave blank for one “General” group.</span></div>
+        <div class="f full toggle"><input type="checkbox" id="w-reg"><label for="w-reg" style="display:block;font-weight:400"><b>I charge sales tax (GST, HST, VAT…)</b><br><span class="note">Tick this if you’re registered to collect tax. Tax you pay on purchases is then tracked as recoverable rather than as a cost.</span></label></div>
+        <div class="f" data-w-tax hidden><label for="w-taxname">Tax name</label><input id="w-taxname" placeholder="e.g. GST/HST, VAT, Sales tax"></div>
+        <div class="f" data-w-tax hidden><label for="w-rate">Rate you charge (%)</label><input id="w-rate" type="number" step="0.01" min="0" inputmode="decimal"></div>
+      </div>
+      <div class="dlgfoot"><span class="sp"></span><button class="btn primary" type="submit">Start my ledger</button></div>
+    </form>
+
+    <div class="controls">
+      <label for="period">Showing</label>
+      <select id="period" style="width:auto"></select>
+      <label for="lineFilter">Group</label>
+      <select id="lineFilter" style="width:auto"></select>
+      <span class="sp"></span>
+      <div class="btnrow quick">
+        <button class="btn primary small" data-new="sale">+ Sale</button>
+        <button class="btn small" data-new="order">+ Purchase</button>
+        <button class="btn small" data-new="cost">+ Expense</button>
+        <button class="btn small" data-new="transfer">+ Transfer</button>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="panel">
+      <div class="panelhead"><h3>Monthly performance</h3><span class="note" id="chartLabel"></span></div>
+      <div class="chart" id="chart"></div>
+      <div class="legend compact"><div><span class="sw" style="background:var(--clover)"></span>Revenue</div><div><span class="sw" style="background:var(--c-biz)"></span>Costs (stock sold, fees, expenses)</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>Where your money went</h3>
+        <p class="hint" id="moneyHint">Everything you’ve paid out, split by type.</p>
+        <div class="stack" id="stack"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="panel">
+        <h3>Earning it back</h3>
+        <p class="hint">Revenue compared with everything paid out, including stock you haven’t sold yet.</p>
+        <div class="big" id="beBig"></div>
+        <div class="meter" aria-hidden="true"><i id="beMeter" style="width:0%"></i></div>
+        <small class="note" id="beText"></small>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>By group</h3>
+        <p class="hint">Costs not tied to one group show as “Whole business”.</p>
+        <div class="tablewrap"><table id="lineTable"></table></div>
+      </div>
+      <div class="panel">
+        <h3>Money accounts</h3>
+        <p class="hint">Current balance of each account, from paid items only.</p>
+        <div class="tablewrap"><table id="acctTable"></table></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panelhead"><h3>Recent activity</h3><a href="#ledger" class="linkbtn" data-goto="ledger">Open full ledger</a></div>
+      <div class="tablewrap"><table id="recentTable"></table></div>
+    </div>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="view" id="v-ledger">
+    <div class="sectionhead">
+      <div>
+        <h2>Ledger</h2>
+        <p>Every sale, purchase, expense and transfer in date order, with a running balance. Unpaid items are listed but don’t move your balance until they’re paid.</p>
+      </div>
+      <div class="act btnrow">
+        <button class="btn" data-export="ledger">Export .csv</button>
+        <button class="btn primary" data-new="transfer">Record transfer</button>
+      </div>
+    </div>
+    <div class="controls">
+      <select id="lgPeriod" aria-label="Period" style="width:auto"></select>
+      <select id="lgAccount" aria-label="Account" style="width:auto"></select>
+      <select id="lgType" aria-label="Type" style="width:auto">
+        <option value="any">All types</option><option value="sale">Sales</option><option value="order">Purchases</option><option value="cost">Expenses</option><option value="transfer">Transfers</option><option value="unpaid">Unpaid only</option>
+      </select>
+      <input id="lgSearch" type="search" placeholder="Search description, customer, supplier, ref…" style="flex:1;min-width:200px">
+    </div>
+    <div class="kpis small" id="lgSummary"></div>
+    <div class="panel"><div class="tablewrap"><table id="ledgerTable"></table></div></div>
+  </section>
+
+  <!-- SALES -->
+  <section class="view" id="v-sales">
+    <div class="sectionhead">
+      <div>
+        <h2>Sales</h2>
+        <p>Log each sale or invoice. Link it to the purchase the goods came from and profit is worked out from the true landed cost.</p>
+      </div>
+      <button class="btn primary act" data-new="sale">Add sale</button>
+    </div>
+    <div class="controls"><select data-status-filter="sale" aria-label="Status" style="width:auto"><option value="any">All sales</option><option value="unpaid">Awaiting payment</option><option value="paid">Paid</option></select></div>
+    <div class="panel"><div class="tablewrap"><table id="salesTable"></table></div></div>
+  </section>
+
+  <!-- PURCHASES -->
+  <section class="view" id="v-orders">
+    <div class="sectionhead">
+      <div>
+        <h2>Purchases &amp; stock</h2>
+        <p>Each time you buy stock or materials, log the full cost of getting it to your door: product, shipping, duties, broker fees. That gives you a true cost per unit.</p>
+      </div>
+      <button class="btn primary act" data-new="order">Add purchase</button>
+    </div>
+    <div class="controls"><select data-status-filter="order" aria-label="Status" style="width:auto"><option value="any">All purchases</option><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+    <div class="panel"><div class="tablewrap"><table id="ordersTable"></table></div></div>
+  </section>
+
+  <!-- EXPENSES -->
+  <section class="view" id="v-costs">
+    <div class="sectionhead">
+      <div>
+        <h2>Expenses</h2>
+        <p>Running costs: rent, software, marketing, insurance, professional fees and so on. Add each payment when it happens, including every renewal.</p>
+      </div>
+      <button class="btn primary act" data-new="cost">Add expense</button>
+    </div>
+    <div class="controls"><select data-status-filter="cost" aria-label="Status" style="width:auto"><option value="any">All expenses</option><option value="unpaid">Unpaid bills</option><option value="paid">Paid</option></select></div>
+    <div class="panel"><div class="tablewrap"><table id="costsTable"></table></div></div>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="view" id="v-reports">
+    <div class="sectionhead noprint">
+      <div>
+        <h2>Reports</h2>
+        <p>Statements for your records, your bank or your accountant. Print or save as PDF.</p>
+      </div>
+      <div class="act btnrow">
+        <select id="rpPeriod" aria-label="Report period" style="width:auto"></select>
+        <button class="btn primary" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+    <div id="reports"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v-setup">
+    <div class="sectionhead"><div><h2>Settings</h2><p>Changes save as you go.</p></div></div>
+    <div class="panel" id="setupForm">
+      <h3>Business</h3>
+      <div class="setgrid" style="margin-top:12px">
+        <div class="f"><label for="s-name">Business name</label><input id="s-name"></div>
+        <div class="f"><label for="s-cur">Currency</label><select id="s-cur" data-currencies></select></div>
+        <div class="f"><label for="s-fy">Financial year starts in</label><select id="s-fy" data-months></select></div>
+      </div>
+      <h3 style="margin-top:24px">Tax</h3>
+      <div class="setgrid" style="margin-top:12px">
+        <div class="f full toggle">
+          <input type="checkbox" id="s-reg">
+          <label for="s-reg" style="display:block;font-weight:400"><b>I’m registered to charge sales tax</b><br>
+          <span class="note">When ticked, tax you pay on purchases and expenses is treated as recoverable and kept out of your costs, and tax you collect is tracked as owed to the tax authority. When unticked, tax you pay is simply part of the cost. Check local rules or an accountant if you’re unsure.</span></label>
+        </div>
+        <div class="f"><label for="s-taxname">Tax name</label><input id="s-taxname" placeholder="GST/HST, VAT, Sales tax…"></div>
+        <div class="f"><label for="s-sales">Rate you charge customers (%)</label><input id="s-sales" type="number" step="0.01" min="0" inputmode="decimal"></div>
+        <div class="f"><label for="s-imp">Tax charged on imports (%)</label><input id="s-imp" type="number" step="0.01" min="0" inputmode="decimal"><span class="help">Used by the “Estimate” button on purchases.</span></div>
+        <div class="f"><label for="s-duty">Usual import duty rate (%)</label><input id="s-duty" type="number" step="0.01" min="0" inputmode="decimal"><span class="help">Optional. Depends on the product’s tariff code.</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Product groups</h3>
+      <p class="hint">Brands, product lines, departments or services. Untick groups that aren’t active; they stay available for past records.</p>
+      <div class="editlist" id="linesEditor"></div>
+      <button class="btn small" id="addLine">+ Add group</button>
+    </div>
+
+    <div class="panel">
+      <h3>Money accounts</h3>
+      <p class="hint">Where money is kept: bank accounts, cash, a card or PayPal balance. The opening balance is what was in the account when you started using Ledger.</p>
+      <div class="editlist" id="acctEditor"></div>
+      <button class="btn small" id="addAcct">+ Add account</button>
+    </div>
+
+    <div class="panel">
+      <h3>Expense categories</h3>
+      <p class="hint">Renaming a category updates every expense that uses it.</p>
+      <div class="editlist cats" id="catEditor"></div>
+      <button class="btn small" id="addCat">+ Add category</button>
+    </div>
+
+    <div class="panel">
+      <h3>Export</h3>
+      <p class="hint">Spreadsheet files for your records or your accountant.</p>
+      <div class="btnrow">
+        <button class="btn" data-export="ledger">Full ledger (.csv)</button>
+        <button class="btn" data-export="sales">Sales (.csv)</button>
+        <button class="btn" data-export="orders">Purchases (.csv)</button>
+        <button class="btn" data-export="costs">Expenses (.csv)</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Backup &amp; restore</h3>
+      <p class="hint">Your records live on this device. Save a backup now and then, and before switching phones or computers; restore it on the new device.</p>
+      <div class="btnrow">
+        <button class="btn primary" id="backupBtn">Save backup</button>
+        <button class="btn" id="restoreBtn">Restore from backup…</button>
+        <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+      </div>
+      <p class="note" id="storageNote" style="margin-top:10px"></p>
+    </div>
+
+    <div class="panel">
+      <h3>App</h3>
+      <p class="hint" id="appHint"></p>
+      <div class="btnrow"><button class="btn primary" data-install hidden>Install app</button></div>
+      <p class="note" id="installHelp"></p>
+    </div>
+
+    <div class="panel">
+      <h3>Start over</h3>
+      <p class="hint">Erase every record and setting on this device. Save a backup first if you might need them.</p>
+      <button class="btn danger" id="eraseBtn">Erase all data…</button>
+    </div>
+  </section>
+</div>
+
+<dialog id="dlg"><form method="dialog" class="dlg" id="dlgForm" novalidate></form></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
