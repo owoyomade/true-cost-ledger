@@ -17,7 +17,10 @@ export const SUPPORT_EMAIL = "appnookstudio@gmail.com";
 export const CODE_HASHES = [
   "5d46db6bf4771f8c4c375b27431835121088e4b83c4bb64494245e63f9c94b8a",
   // Microsoft Store certification testers only. Remove this line to switch that code off.
-  "c936ec753314b95adf0d5153dd9b2a17697868ed41b73990ab6f8e83604addbd"
+  "c936ec753314b95adf0d5153dd9b2a17697868ed41b73990ab6f8e83604addbd",
+  // Free gift code for the sisters' WhatsApp group (shared 2026-10-30). Remove this line to switch that code off;
+  // anyone who unlocked with it would be locked again and need a new code.
+  "97403db6b286784008b65b9c734a3dc6edb32882102736b262a3b87e5050f9a1"
 ];
 
 /** Uppercases and strips spaces and dashes, so "tc-ab12 cd34" and "TCAB12CD34" match. */
