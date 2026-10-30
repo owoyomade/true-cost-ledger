@@ -8,7 +8,7 @@
 export const FREE_LIMIT = 25;
 
 // Link to the Gumroad or Etsy listing. Leave empty until the listing is live; the Buy button stays hidden.
-export const BUY_URL = "";
+export const BUY_URL = "https://appnook.gumroad.com/l/truecostledger";
 
 // Shown in Settings so buyers know where to get help. Leave empty to hide the line.
 export const SUPPORT_EMAIL = "appnookstudio@gmail.com";
