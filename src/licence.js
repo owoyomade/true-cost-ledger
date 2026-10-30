@@ -11,7 +11,7 @@ export const FREE_LIMIT = 25;
 export const BUY_URL = "";
 
 // Shown in Settings so buyers know where to get help. Leave empty to hide the line.
-export const SUPPORT_EMAIL = "";
+export const SUPPORT_EMAIL = "appnookstudio@gmail.com";
 
 // Keep old hashes when adding a new one, so people who bought earlier versions stay unlocked.
 export const CODE_HASHES = [
