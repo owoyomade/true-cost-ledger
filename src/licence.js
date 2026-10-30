@@ -15,7 +15,9 @@ export const SUPPORT_EMAIL = "appnookstudio@gmail.com";
 
 // Keep old hashes when adding a new one, so people who bought earlier versions stay unlocked.
 export const CODE_HASHES = [
-  "5d46db6bf4771f8c4c375b27431835121088e4b83c4bb64494245e63f9c94b8a"
+  "5d46db6bf4771f8c4c375b27431835121088e4b83c4bb64494245e63f9c94b8a",
+  // Microsoft Store certification testers only. Remove this line to switch that code off.
+  "c936ec753314b95adf0d5153dd9b2a17697868ed41b73990ab6f8e83604addbd"
 ];
 
 /** Uppercases and strips spaces and dashes, so "tc-ab12 cd34" and "TCAB12CD34" match. */

@@ -18,6 +18,17 @@ export default defineConfig({
         background_color: "#FAF7F5",
         theme_color: "#4A2545",
         categories: ["business", "finance", "productivity"],
+        lang: "en",
+        dir: "ltr",
+        // Shown in browser install dialogs and checked by app-store packagers such as PWABuilder.
+        screenshots: [
+          { src: "screenshots/desktop-overview.png", sizes: "1440x900", type: "image/png", form_factor: "wide", label: "Overview: revenue, real profit, cash and stock at a glance" },
+          { src: "screenshots/desktop-purchases.png", sizes: "1440x900", type: "image/png", form_factor: "wide", label: "Purchases with the true landed cost per unit" },
+          { src: "screenshots/desktop-reports.png", sizes: "1440x900", type: "image/png", form_factor: "wide", label: "Profit and loss and other reports, ready to print" },
+          { src: "screenshots/phone-overview.png", sizes: "780x1688", type: "image/png", form_factor: "narrow", label: "Your business numbers on your phone" },
+          { src: "screenshots/phone-purchase-sheet.png", sizes: "780x1688", type: "image/png", form_factor: "narrow", label: "Add a purchase and see the cost per unit" },
+          { src: "screenshots/phone-reports.png", sizes: "780x1688", type: "image/png", form_factor: "narrow", label: "Reports on the go" }
+        ],
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png" },
@@ -31,7 +42,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
-        navigateFallback: "/index.html"
+        // Store screenshots are only for install dialogs, so they aren't downloaded for offline use.
+        globIgnores: ["screenshots/**"],
+        navigateFallback: "/index.html",
+        // The privacy policy is its own page, so the app shell mustn't replace it.
+        navigateFallbackDenylist: [/^\/privacy/]
       }
     })
   ],
