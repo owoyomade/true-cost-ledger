@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normaliseCode, hashCode, isValidCode, countEntries, canAddEntry, FREE_LIMIT, CODE_HASHES } from "../src/licence.js";
+import { normaliseCode, hashCode, isValidCode, countEntries, canAddEntry, buyUrlFor, FREE_LIMIT, CODE_HASHES, BUY_URL, SHOP_URLS } from "../src/licence.js";
 
 // A made-up code, so the real buyer code never appears in the repo.
 const TEST_CODE = "TC-TEST-2346-ABCD";
@@ -36,5 +36,14 @@ describe("free trial", () => {
     expect(canAddEntry(entries(FREE_LIMIT - 1), false)).toBe(true);
     expect(canAddEntry(entries(FREE_LIMIT), false)).toBe(false);
     expect(canAddEntry(entries(FREE_LIMIT + 10), true)).toBe(true);
+  });
+});
+
+describe("buy link", () => {
+  it("sends Etsy visitors back to Etsy and everyone else to the main shop", () => {
+    expect(buyUrlFor("etsy")).toBe(SHOP_URLS.etsy);
+    expect(buyUrlFor("etsy")).toMatch(/^https:\/\/www\.etsy\.com\//);
+    expect(buyUrlFor("")).toBe(BUY_URL);
+    expect(buyUrlFor("somewhere-else")).toBe(BUY_URL);
   });
 });

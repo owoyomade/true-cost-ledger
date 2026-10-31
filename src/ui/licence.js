@@ -1,6 +1,6 @@
 // Free-trial status, unlocking, the sample-data banner, and the About panel.
 import * as store from "../store.js";
-import { FREE_LIMIT, BUY_URL, SUPPORT_EMAIL, isValidCode, normaliseCode, countEntries, canAddEntry } from "../licence.js";
+import { FREE_LIMIT, SHOP_URLS, buyUrlFor, SUPPORT_EMAIL, isValidCode, normaliseCode, countEntries, canAddEntry } from "../licence.js";
 import { sampleRecords, sampleSettings } from "../sample.js";
 import { DEFAULT_SETTINGS } from "../constants.js";
 import { version } from "../../package.json";
@@ -8,6 +8,24 @@ import { $, esc, items, settings, toast, persist, today } from "./util.js";
 
 let unlocked = false;
 let checkedCode = null; // the saved code that `unlocked` was worked out from
+
+// Which shop's listing brought this visitor here, remembered on this device so the Buy link keeps
+// pointing back to that shop on later visits, when the ?from= part of the link is gone.
+const FROM_KEY = "truecost-from";
+let buyUrl = buyUrlFor("");
+
+function rememberShop() {
+  const params = new URLSearchParams(location.search);
+  const from = params.get("from");
+  if (from !== null) {
+    params.delete("from");
+    history.replaceState(null, "", location.pathname + (params.size ? "?" + params : "") + location.hash);
+    if (SHOP_URLS[from]) try { localStorage.setItem(FROM_KEY, from); } catch {}
+  }
+  let saved = "";
+  try { saved = localStorage.getItem(FROM_KEY) || ""; } catch {}
+  buyUrl = buyUrlFor(saved);
+}
 
 export const isUnlocked = () => unlocked;
 const hasSamples = () => Object.values(items()).some(r => r.sample);
@@ -47,7 +65,7 @@ export function allowNewEntry() {
     <p class="hint">Thanks for trying TrueCost Ledger. Your records are safe and you can still view, edit, export and back them up.
     To keep adding entries, unlock the full version with the code from your purchase.</p>
     <div class="dlgfoot"><button type="button" class="btn" id="cancelBtn">Not now</button><span class="sp"></span>
-    ${BUY_URL ? `<a class="btn" href="${esc(BUY_URL)}" target="_blank" rel="noopener">Buy the full version</a>` : ""}
+    ${buyUrl ? `<a class="btn" href="${esc(buyUrl)}" target="_blank" rel="noopener">Buy the full version</a>` : ""}
     <button type="button" class="btn primary" id="limitUnlock">Enter unlock code</button></div>`;
   form.dataset.kind = "limit"; form._rec = {};
   $("#dlg").showModal();
@@ -64,8 +82,8 @@ export function renderLicence() {
     ? "<b>Full version unlocked.</b> Thank you for buying TrueCost Ledger! Unlimited entries on this device. Your unlock carries over when you restore a backup on another device."
     : `${esc(trialText)} Enter the unlock code from your purchase to remove the limit.`;
   $("#unlockForm").hidden = unlocked;
-  $("#buyLink").hidden = !BUY_URL;
-  if (BUY_URL) $("#buyLink").href = BUY_URL;
+  $("#buyLink").hidden = !buyUrl;
+  if (buyUrl) $("#buyLink").href = buyUrl;
 
   const welcomeShowing = !$("#welcome").hidden;
   $("#trialBanner").hidden = unlocked || welcomeShowing || n === 0;
@@ -108,6 +126,7 @@ export async function handleUnlockLink() {
 }
 
 export function initLicence() {
+  rememberShop();
   $("#unlockBtn").addEventListener("click", async () => {
     const code = $("#unlockCode").value;
     if (!normaliseCode(code)) { toast("Enter the unlock code from your purchase."); return; }

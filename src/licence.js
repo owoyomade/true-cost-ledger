@@ -10,6 +10,13 @@ export const FREE_LIMIT = 25;
 // Link to the Gumroad or Etsy listing. Leave empty until the listing is live; the Buy button stays hidden.
 export const BUY_URL = "https://appnook.gumroad.com/l/truecostledger";
 
+// People who arrive from another shop's listing (/?from=etsy) get that shop's Buy link instead, because Etsy
+// doesn't allow sending its shoppers elsewhere to pay. Swap the shop link for the listing's own link once it's live.
+export const SHOP_URLS = { etsy: "https://www.etsy.com/shop/AppNookStudio" };
+
+/** The Buy link for a visitor who came from `from` ("etsy", or "" for everyone else). */
+export const buyUrlFor = from => SHOP_URLS[from] || BUY_URL;
+
 // Shown in Settings so buyers know where to get help. Leave empty to hide the line.
 export const SUPPORT_EMAIL = "appnookstudio@gmail.com";
 
