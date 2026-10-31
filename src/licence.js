@@ -7,12 +7,15 @@
 
 export const FREE_LIMIT = 25;
 
-// Link to the Gumroad or Etsy listing. Leave empty until the listing is live; the Buy button stays hidden.
-export const BUY_URL = "https://appnook.gumroad.com/l/truecostledger";
+// The Etsy listing is the main place to buy. No country in the path, so Etsy shows each shopper their own
+// local version, and no tracking parameters. Leave empty to hide the Buy button.
+const ETSY_LISTING = "https://www.etsy.com/listing/4606996545/truecost-ledger-app-etsy-seller";
+export const BUY_URL = ETSY_LISTING;
 
-// People who arrive from another shop's listing (/?from=etsy) get that shop's Buy link instead, because Etsy
-// doesn't allow sending its shoppers elsewhere to pay. Swap the shop link for the listing's own link once it's live.
-export const SHOP_URLS = { etsy: "https://www.etsy.com/shop/AppNookStudio" };
+// People who arrive from another shop's listing (/?from=etsy) get that shop's Buy link, because Etsy doesn't
+// allow sending its shoppers elsewhere to pay. Etsy is also the main link now, but this keeps Etsy visitors on
+// Etsy if BUY_URL ever changes (for example back to Gumroad).
+export const SHOP_URLS = { etsy: ETSY_LISTING };
 
 /** The Buy link for a visitor who came from `from` ("etsy", or "" for everyone else). */
 export const buyUrlFor = from => SHOP_URLS[from] || BUY_URL;
